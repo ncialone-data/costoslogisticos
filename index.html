@@ -201,11 +201,11 @@
     <button onclick="setMonth(12,this)">Dic</button>
   </div>
 
-
-
-
-
-
+  <span class="cut-lbl">Vista tablas</span>
+  <div class="seg" id="seg-view">
+    <button onclick="setView('monthly',this)" class="on">Mensual</button>
+    <button onclick="setView('weekly',this)">Semanal</button>
+    <button onclick="setView('daily',this)">Diaria</button>
   </div>
 
   <button class="refresh-btn" id="refresh-btn" onclick="loadData()">
@@ -236,6 +236,7 @@ let charts      = {};
 // ── ACTIVE FILTER STATE ───────────────────────────────────────────────────────
 let activeYear  = new Date().getFullYear();
 let activeMonth = new Date().getMonth() + 1;   // 1-12; 0 = todo el año
+let activeView  = 'monthly';
 
 // ── FILTER SETTERS ────────────────────────────────────────────────────────────
 function setYear(y, el) {
@@ -247,6 +248,12 @@ function setYear(y, el) {
 function setMonth(m, el) {
   activeMonth = m;
   document.querySelectorAll('#seg-month button').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  applyFilters();
+}
+function setView(v, el) {
+  activeView = v;
+  document.querySelectorAll('#seg-view button').forEach(b => b.classList.remove('on'));
   el.classList.add('on');
   applyFilters();
 }
@@ -517,7 +524,7 @@ function viajesTable(rows) {
 function applyFilters() {
   const year  = activeYear;
   const month = activeMonth;  // 0 = all year
-  const view  = 'monthly';
+  const view  = activeView;
   if (!year || (!allLocal.length && !allInterior.length)) return;
 
   // ── Filtered rows (respond to month selection) ──
