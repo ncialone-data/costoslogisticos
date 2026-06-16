@@ -19,13 +19,13 @@
     --muted: #8892b0;
     --accent: #4f8ef7;
     --green: #22c55e;
-    --yellow: #f59e0b;
+    --yellow: #fbbf24;
     --red: #ef4444;
     --purple: #a855f7;
     --camion-color: #4f8ef7;
     --camioneta-color: #22c55e;
     --interior-color: #a855f7;
-    --retiro-color: #f59e0b;
+    --retiro-color: #f97316;
     --interplanta-color: #ec4899;
     --directo-color: #06b6d4;
     /* Filter bar (light) */
@@ -152,7 +152,7 @@
 
   .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
   .badge-interior   { background: rgba(168,85,247,.15); color: var(--interior-color); }
-  .badge-retiro     { background: rgba(245,158,11,.15);  color: var(--retiro-color); }
+  .badge-retiro     { background: rgba(249,115,22,.15);  color: var(--retiro-color); }
   .badge-interplanta{ background: rgba(236,72,153,.15);  color: var(--interplanta-color); }
   .badge-directo    { background: rgba(6,182,212,.15);   color: var(--directo-color); }
   .badge-normal     { background: rgba(79,142,247,.15);  color: var(--camion-color); }
@@ -199,14 +199,6 @@
     <button onclick="setMonth(10,this)">Oct</button>
     <button onclick="setMonth(11,this)">Nov</button>
     <button onclick="setMonth(12,this)">Dic</button>
-  </div>
-
-  <span class="cut-lbl">Vista tablas</span>
-  <div class="seg" id="seg-view">
-    <button onclick="setView('monthly',this)" class="on">Mensual</button>
-    <button onclick="setView('weekly',this)">Semanal</button>
-    <button onclick="setView('daily',this)">Diaria</button>
-  </div>
 
   <button class="refresh-btn" id="refresh-btn" onclick="loadData()">
     <span id="refresh-icon">↻</span> Actualizar datos
@@ -223,8 +215,8 @@
 </div>
 
 <script>
-const SHEET1_URL = 'https://docs.google.com/spreadsheets/d/13GRK6B9at_FeUvyIGPiwUmkz8-y9s55eyiNfruK1NiQ/gviz/tq?tqx=out:csv&gid=0';
-const SHEET2_URL = 'https://docs.google.com/spreadsheets/d/1zYShgp3yKZfJlc5ZckIrdkGOi3RP8M-NkHMyRER4n00/gviz/tq?tqx=out:csv&gid=12332453';
+const SHEET1_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTi7MdEChz7JN_PfbbGv1mlsUu7wXrMfZ6dxRXCaCCMcXiF1oPBsl-4g2x-m2PP4UsARtjGe0kr3vyR/pub?gid=0&single=true&output=csv';
+const SHEET2_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRLiLJDwbff3CnL97fzpugm-PjPwlZeG-RLF3HiNIETieVE_ulVEAXbqK-6Ay4ksVrWw6btTDS-5S7G/pub?gid=12332453&single=true&output=csv';
 
 const MESES      = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 const MESES_FULL = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
@@ -236,7 +228,6 @@ let charts      = {};
 // ── ACTIVE FILTER STATE ───────────────────────────────────────────────────────
 let activeYear  = new Date().getFullYear();
 let activeMonth = new Date().getMonth() + 1;   // 1-12; 0 = todo el año
-let activeView  = 'monthly';
 
 // ── FILTER SETTERS ────────────────────────────────────────────────────────────
 function setYear(y, el) {
@@ -248,12 +239,6 @@ function setYear(y, el) {
 function setMonth(m, el) {
   activeMonth = m;
   document.querySelectorAll('#seg-month button').forEach(b => b.classList.remove('on'));
-  el.classList.add('on');
-  applyFilters();
-}
-function setView(v, el) {
-  activeView = v;
-  document.querySelectorAll('#seg-view button').forEach(b => b.classList.remove('on'));
   el.classList.add('on');
   applyFilters();
 }
@@ -318,9 +303,16 @@ async function loadData() {
   const icon = document.getElementById('refresh-icon');
   btn.disabled = true; icon.classList.add('spin');
   try {
+    function fetchWithTimeout(url, ms=15000) {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), ms);
+      return fetch(url, { signal: ctrl.signal })
+        .then(r => { clearTimeout(timer); if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+        .catch(e => { clearTimeout(timer); throw new Error(e.name==='AbortError' ? 'Timeout (15s): verificá que las hojas estén publicadas.' : e.message); });
+    }
     const [r1, r2] = await Promise.all([
-      fetch(SHEET1_URL).then(r => r.text()),
-      fetch(SHEET2_URL).then(r => r.text())
+      fetchWithTimeout(SHEET1_URL),
+      fetchWithTimeout(SHEET2_URL)
     ]);
 
     allLocal = parseCSV(r1)
@@ -343,6 +335,12 @@ async function loadData() {
         reparto: r.REPARTO||'',
         cost: parseCost(r.COSTO)
       }));
+
+    // Validate data loaded
+    if (!allLocal.length && !allInterior.length) {
+      const preview = r1.slice(0, 200).replace(/</g, '&lt;');
+      throw new Error('Las hojas no devolvieron datos válidos.<br><small>Primeras 200 chars de hoja 1: <code>' + preview + '</code></small>');
+    }
 
     // Build year buttons
     const years = [...new Set([...allLocal,...allInterior].filter(r=>r.date).map(r=>r.date.getFullYear()))].sort((a,b)=>b-a);
@@ -524,8 +522,11 @@ function viajesTable(rows) {
 function applyFilters() {
   const year  = activeYear;
   const month = activeMonth;  // 0 = all year
-  const view  = activeView;
-  if (!year || (!allLocal.length && !allInterior.length)) return;
+  const view  = 'monthly';
+  if (!year || (!allLocal.length && !allInterior.length)) {
+    document.getElementById('app').innerHTML = '<div class="error-box" style="margin:24px">⚠️ Sin datos para mostrar. Actualizá los datos con el botón de la barra superior.</div>';
+    return;
+  }
 
   // ── Filtered rows (respond to month selection) ──
   const localFilt = filterRows(allLocal,    year, month);
@@ -763,6 +764,10 @@ function applyFilters() {
     <div class="section">
       <div class="section-title"><span class="dot dot-camioneta"></span>Por Empresa</div>
       ${empresaTable(vanFilt)}
+    </div>
+    <div class="section">
+      <div class="section-title"><span class="dot dot-camioneta"></span>Registro — ${periodLabel}</div>
+      ${localDetailTable(vanFilt)}
     </div>` : `
     <div class="section">
       <div class="empty" style="padding:60px">
@@ -842,13 +847,13 @@ function applyFilters() {
   ]);
   // Daily — filtered period
   makeBar('chart-total-daily', dAll.labels, [
-    { label:'Costo diario', data:dAll.data, backgroundColor:'rgba(245,158,11,.75)', borderRadius:3 }
+    { label:'Costo diario', data:dAll.data, backgroundColor:'rgba(251,191,36,.75)', borderRadius:3 }
   ]);
 
   // Retiros — annual charts
-  makeBar('chart-retiro-monthly', MESES, [{ label:'Retiros', data:mRet, backgroundColor:'rgba(245,158,11,.8)', borderRadius:4 }]);
-  makeBar('chart-retiro-weekly',  wRet.labels, [{ label:'Retiros', data:wRet.data, backgroundColor:'rgba(245,158,11,.7)', borderRadius:3 }]);
-  makeBar('chart-retiro-daily',   dRet.labels, [{ label:'Retiros', data:dRet.data, backgroundColor:'rgba(245,158,11,.65)', borderRadius:3 }]);
+  makeBar('chart-retiro-monthly', MESES, [{ label:'Retiros', data:mRet, backgroundColor:'rgba(249,115,22,.8)', borderRadius:4 }]);
+  makeBar('chart-retiro-weekly',  wRet.labels, [{ label:'Retiros', data:wRet.data, backgroundColor:'rgba(249,115,22,.7)', borderRadius:3 }]);
+  makeBar('chart-retiro-daily',   dRet.labels, [{ label:'Retiros', data:dRet.data, backgroundColor:'rgba(249,115,22,.65)', borderRadius:3 }]);
 
   // Interplanta — annual charts
   makeBar('chart-ipl-monthly', MESES, [{ label:'Interplanta', data:mIpl, backgroundColor:'rgba(236,72,153,.8)', borderRadius:4 }]);
