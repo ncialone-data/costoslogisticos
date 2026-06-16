@@ -96,7 +96,9 @@
   .main { padding: 24px 40px; max-width: 2200px; margin: 0 auto; }
 
   /* ── KPI CARDS ──────────────────────────────────────────────────────────── */
-  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 24px; }
+  .kpi-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; margin-bottom: 24px; }
+  @media (max-width: 1200px) { .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 700px)  { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
   .kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; position: relative; overflow: hidden; }
   .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 10px 10px 0 0; }
   .kpi-card.total::before  { background: var(--yellow); }
@@ -116,9 +118,9 @@
   .kpi-card.interplanta .value { color: var(--interplanta-color); }
 
   /* ── TABS ───────────────────────────────────────────────────────────────── */
-  .tabs { display: flex; justify-content: center; gap: 4px; margin-bottom: 24px; flex-wrap: wrap; }
-  .tabs-inner { display: inline-flex; background: var(--fb-bg); border: 1px solid var(--fb-line); border-radius: 12px; padding: 4px; gap: 3px; flex-wrap: wrap; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
-  .tab { padding: 9px 22px; border-radius: 9px; cursor: pointer; color: var(--fb-mut); background: none; font-size: 13.5px; font-weight: 500; border: none; transition: all .15s; white-space: nowrap; font-family: 'Outfit', sans-serif; }
+  .tabs { margin-bottom: 24px; }
+  .tabs-inner { display: flex; width: 100%; background: var(--fb-bg); border: 1px solid var(--fb-line); border-radius: 12px; padding: 4px; gap: 3px; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+  .tab { flex: 1; text-align: center; padding: 9px 12px; border-radius: 9px; cursor: pointer; color: var(--fb-mut); background: none; font-size: 13.5px; font-weight: 500; border: none; transition: all .15s; white-space: nowrap; font-family: 'Outfit', sans-serif; }
   .tab:hover { color: var(--fb-tx); background: rgba(0,0,0,.05); }
   .tab.active { background: var(--fb-acc); color: #fff; font-weight: 600; box-shadow: 0 2px 8px rgba(37,99,235,.28); }
   .tab-pane { display: none; }
@@ -154,8 +156,7 @@
     .kpi-card .value { font-size: 19px; }
     .kpi-card .label { font-size: 9.5px; }
     .tabs { margin-bottom: 16px; }
-    .tabs-inner { width: 100%; justify-content: stretch; }
-    .tab { flex: 1; text-align: center; padding: 8px 6px; font-size: 12px; }
+    .tab { padding: 8px 6px; font-size: 12px; }
     .section { padding: 12px; }
     .section-title { font-size: 13px; }
     table { font-size: 11px; }
