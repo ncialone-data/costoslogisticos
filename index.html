@@ -54,10 +54,12 @@
 
   /* ── FILTER BAR (light) ─────────────────────────────────────────────────── */
   .cutbar {
-    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
     background: var(--fb-bg); border-bottom: 1px solid var(--fb-line);
-    padding: 10px 28px; box-shadow: var(--fb-shadow);
+    padding: 10px 40px; box-shadow: var(--fb-shadow);
     position: sticky; top: 0; z-index: 100;
+  }
+  .cutbar-row {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
   }
   .cut-lbl {
     font-size: 11px; letter-spacing: .11em; text-transform: uppercase;
@@ -91,7 +93,7 @@
   @keyframes spin { to { transform: rotate(360deg); } }
 
   /* ── MAIN ───────────────────────────────────────────────────────────────── */
-  .main { padding: 24px 40px; max-width: 1920px; margin: 0 auto; }
+  .main { padding: 24px 40px; max-width: 2200px; margin: 0 auto; }
 
   /* ── KPI CARDS ──────────────────────────────────────────────────────────── */
   .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 24px; }
@@ -141,14 +143,23 @@
     .grid-2 { grid-template-columns: 1fr; }
   }
   @media (max-width: 700px) {
-    .main { padding: 14px 14px; }
+    .main { padding: 12px 12px; }
+    .cutbar { padding: 8px 12px; }
+    .cutbar-row { gap: 6px; }
+    .cut-lbl { font-size: 10px; }
+    .seg button { padding: 5px 8px; font-size: 11px; }
+    .refresh-btn { padding: 6px 12px; font-size: 11.5px; }
     .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .kpi-card .value { font-size: 18px; }
-    .tabs-inner { flex-wrap: wrap; }
-    .tab { padding: 7px 14px; font-size: 12.5px; }
-    .section { padding: 14px; }
-    .cutbar { padding: 8px 14px; gap: 7px; }
-    .seg button { padding: 5px 9px; font-size: 11.5px; }
+    .kpi-card { padding: 12px 12px; }
+    .kpi-card .value { font-size: 19px; }
+    .kpi-card .label { font-size: 9.5px; }
+    .tabs { margin-bottom: 16px; }
+    .tabs-inner { width: 100%; justify-content: stretch; }
+    .tab { flex: 1; text-align: center; padding: 8px 6px; font-size: 12px; }
+    .section { padding: 12px; }
+    .section-title { font-size: 13px; }
+    table { font-size: 11px; }
+    th, td { padding: 5px 6px; }
   }
 
   .chart-wrap { position: relative; height: 260px; }
@@ -200,29 +211,30 @@
 
 <!-- FILTER BAR -->
 <div class="cutbar">
-  <span class="cut-lbl">Año</span>
-  <div class="seg" id="seg-year"><!-- populated by JS --></div>
-
-  <span class="cut-lbl">Período</span>
-  <div class="seg" id="seg-month">
-    <button onclick="setMonth(0,this)">Todo</button>
-    <button onclick="setMonth(1,this)">Ene</button>
-    <button onclick="setMonth(2,this)">Feb</button>
-    <button onclick="setMonth(3,this)">Mar</button>
-    <button onclick="setMonth(4,this)">Abr</button>
-    <button onclick="setMonth(5,this)">May</button>
-    <button onclick="setMonth(6,this)">Jun</button>
-    <button onclick="setMonth(7,this)">Jul</button>
-    <button onclick="setMonth(8,this)">Ago</button>
-    <button onclick="setMonth(9,this)">Sep</button>
-    <button onclick="setMonth(10,this)">Oct</button>
-    <button onclick="setMonth(11,this)">Nov</button>
-    <button onclick="setMonth(12,this)">Dic</button>
-
-  <button class="refresh-btn" id="refresh-btn" onclick="loadData()">
-    <span id="refresh-icon">↻</span> Actualizar datos
-  </button>
-  <span class="refresh-status" id="last-refresh"></span>
+  <div class="cutbar-row">
+    <span class="cut-lbl">Año</span>
+    <div class="seg" id="seg-year"><!-- populated by JS --></div>
+    <span class="cut-lbl">Período</span>
+    <div class="seg" id="seg-month">
+      <button onclick="setMonth(0,this)">Todo</button>
+      <button onclick="setMonth(1,this)">Ene</button>
+      <button onclick="setMonth(2,this)">Feb</button>
+      <button onclick="setMonth(3,this)">Mar</button>
+      <button onclick="setMonth(4,this)">Abr</button>
+      <button onclick="setMonth(5,this)">May</button>
+      <button onclick="setMonth(6,this)">Jun</button>
+      <button onclick="setMonth(7,this)">Jul</button>
+      <button onclick="setMonth(8,this)">Ago</button>
+      <button onclick="setMonth(9,this)">Sep</button>
+      <button onclick="setMonth(10,this)">Oct</button>
+      <button onclick="setMonth(11,this)">Nov</button>
+      <button onclick="setMonth(12,this)">Dic</button>
+    </div>
+    <button class="refresh-btn" id="refresh-btn" onclick="loadData()">
+      <span id="refresh-icon">↻</span> Actualizar datos
+    </button>
+    <span class="refresh-status" id="last-refresh"></span>
+  </div>
 </div>
 
 <!-- APP -->
