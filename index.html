@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Costos Logísticos</title>
+<title>Dashboard Costos Logísticos · Lustramax</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..60,700;12..60,800&family=Outfit:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -181,8 +181,8 @@
 <!-- HEADER -->
 <div class="header">
   <div class="brand">
-    <h1>Costos <span>Logísticos</span></h1>
-    <div class="sub"><span class="live-dot"></span>Datos desde Google Sheets</div>
+    <h1>Dashboard Costos <span>Logísticos</span></h1>
+    <div class="sub"><span class="live-dot"></span>Lustramax · Datos en tiempo real desde Google Sheets</div>
   </div>
 </div>
 
@@ -262,7 +262,7 @@ function setMonth(m, el) {
 function classifyTipo(obs, reparto) {
   const s = (obs + ' ' + reparto).toUpperCase();
   if (s.includes('RETIRO'))                             return 'retiro';
-  if (s.includes('MOVIMIENTO') || s.includes('VYMAT')) return 'interplanta';
+  if (s.includes('INTERPLANTA') || s.includes('MOVIMIENTO') || s.includes('VYMAT')) return 'interplanta';
   if (s.includes('DIRECTO'))                            return 'directo';
   return 'normal';
 }
@@ -882,8 +882,4 @@ function switchTab(name, el) {
 }
 
 // ── INIT — load immediately on open ──────────────────────────────────────────
-loadData();
-</script>
-</body>
-</html>
-                  
+loadData(
