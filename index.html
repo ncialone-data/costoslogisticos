@@ -262,7 +262,7 @@ function setMonth(m, el) {
 function classifyTipo(obs, reparto) {
   const s = (obs + ' ' + reparto).toUpperCase();
   if (s.includes('RETIRO'))                             return 'retiro';
-  if (s.includes('INTERPLANTA') || s.includes('MOVIMIENTO') || s.includes('VYMAT')) return 'interplanta';
+  if (obs.toUpperCase().includes('INTERPLANTA') || reparto.toUpperCase().includes('INTERPLANTA')) return 'interplanta';
   if (s.includes('DIRECTO'))                            return 'directo';
   return 'normal';
 }
