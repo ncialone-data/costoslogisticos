@@ -524,6 +524,38 @@ function makeBar(id, labels, datasets, stacked=false) {
   });
 }
 
+function makeLine(id, labels, datasets) {
+  destroyChart(id);
+  const ctx = document.getElementById(id); if (!ctx) return;
+  charts[id] = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: datasets.map(d => ({
+        ...d,
+        fill: true,
+        tension: 0.4,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: d.borderColor,
+        borderWidth: 2.5,
+      }))
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { labels: { color:'#8892b0', font:{size:11}, usePointStyle:true, pointStyleWidth:10 } },
+        tooltip: { callbacks: { label: c => ' ' + c.dataset.label + ': ' + fmtFull(c.raw) } }
+      },
+      scales: {
+        x: { ticks:{color:'#8892b0',font:{size:10},maxRotation:0}, grid:{color:'rgba(46,51,77,.4)'} },
+        y: { ticks:{color:'#8892b0',font:{size:11},callback:v=>fmt(v)}, grid:{color:'rgba(46,51,77,.4)'} }
+      }
+    }
+  });
+}
+
 // ── TABLE HELPERS ─────────────────────────────────────────────────────────────
 function periodTable(rows, view) {
   const g = groupByView(rows, view);
@@ -648,6 +680,22 @@ function applyFilters() {
   const mInt = monthlyTotals(intYear,  year);
   const mRet = monthlyTotals(retiroYear, year);
   const mIpl = monthlyTotals(interplantaYear, year);
+
+  // Trim future months with no data so lines/bars don't drop to zero
+  const lastDataIdx = Math.max(
+    mCam.reduce((mx,v,i)=>v>0?i:mx,-1),
+    mVan.reduce((mx,v,i)=>v>0?i:mx,-1),
+    mInt.reduce((mx,v,i)=>v>0?i:mx,-1),
+    mRet.reduce((mx,v,i)=>v>0?i:mx,-1),
+    mIpl.reduce((mx,v,i)=>v>0?i:mx,-1)
+  );
+  const cutIdx = lastDataIdx >= 0 ? lastDataIdx + 1 : 12;
+  const mesesY = MESES.slice(0, cutIdx);
+  const mCamY  = mCam.slice(0, cutIdx);
+  const mVanY  = mVan.slice(0, cutIdx);
+  const mIntY  = mInt.slice(0, cutIdx);
+  const mRetY  = mRet.slice(0, cutIdx);
+  const mIplY  = mIpl.slice(0, cutIdx);
 
   const wAll = weeklyTotals([...localYear,...intYear], year);
   const wRet = weeklyTotals(retiroYear, year);
@@ -912,11 +960,11 @@ function applyFilters() {
   // ── DRAW CHARTS ────────────────────────────────────────────────────────────
 
   // Resumen — annual charts (always full year)
-  makeBar('chart-total-monthly', MESES, [
-    { label:'Camiones',   data:mCam, backgroundColor:'rgba(79,142,247,.8)',  borderRadius:4 },
-    { label:'Camionetas', data:mVan, backgroundColor:'rgba(34,197,94,.8)',   borderRadius:4 },
-    { label:'Interior',   data:mInt, backgroundColor:'rgba(168,85,247,.8)',  borderRadius:4 },
-  ], true);
+  makeLine('chart-total-monthly', mesesY, [
+    { label:'Camiones',   data:mCamY, borderColor:'rgba(79,142,247,1)',   backgroundColor:'rgba(79,142,247,.10)'  },
+    { label:'Camionetas', data:mVanY, borderColor:'rgba(34,197,94,1)',    backgroundColor:'rgba(34,197,94,.10)'   },
+    { label:'Interior',   data:mIntY, borderColor:'rgba(168,85,247,1)',   backgroundColor:'rgba(168,85,247,.10)'  },
+  ]);
   makeBar('chart-total-weekly', wAll.labels, [
     { label:'Todos los costos', data:wAll.data, backgroundColor:'rgba(79,142,247,.7)', borderRadius:3 }
   ]);
@@ -926,23 +974,23 @@ function applyFilters() {
   ]);
 
   // Retiros — annual charts
-  makeBar('chart-retiro-monthly', MESES, [{ label:'Retiros', data:mRet, backgroundColor:'rgba(249,115,22,.85)', borderRadius:4 }]);
+  makeBar('chart-retiro-monthly', mesesY, [{ label:'Retiros', data:mRetY, backgroundColor:'rgba(249,115,22,.85)', borderRadius:4 }]);
   makeBar('chart-retiro-weekly',  wRet.labels, [{ label:'Retiros', data:wRet.data, backgroundColor:'rgba(249,115,22,.75)', borderRadius:3 }]);
   makeBar('chart-retiro-daily',   dRet.labels, [{ label:'Retiros', data:dRet.data, backgroundColor:'rgba(249,115,22,.7)', borderRadius:3 }]);
 
   // Interplanta — annual charts
-  makeBar('chart-ipl-monthly', MESES, [{ label:'Interplanta', data:mIpl, backgroundColor:'rgba(236,72,153,.8)', borderRadius:4 }]);
+  makeBar('chart-ipl-monthly', mesesY, [{ label:'Interplanta', data:mIplY, backgroundColor:'rgba(236,72,153,.8)', borderRadius:4 }]);
   makeBar('chart-ipl-weekly',  wIpl.labels, [{ label:'Interplanta', data:wIpl.data, backgroundColor:'rgba(236,72,153,.7)', borderRadius:3 }]);
   makeBar('chart-ipl-daily',   dIpl.labels, [{ label:'Interplanta', data:dIpl.data, backgroundColor:'rgba(236,72,153,.65)', borderRadius:3 }]);
 
   // Camiones — annual
-  makeBar('chart-camiones-monthly', MESES, [{ label:'Camiones', data:mCam, backgroundColor:'rgba(79,142,247,.8)', borderRadius:4 }]);
+  makeBar('chart-camiones-monthly', mesesY, [{ label:'Camiones', data:mCamY, backgroundColor:'rgba(79,142,247,.8)', borderRadius:4 }]);
 
   // Camionetas
-  if (hasVan) makeBar('chart-camionetas-monthly', MESES, [{ label:'Camionetas', data:mVan, backgroundColor:'rgba(34,197,94,.8)', borderRadius:4 }]);
+  if (hasVan) makeBar('chart-camionetas-monthly', mesesY, [{ label:'Camionetas', data:mVanY, backgroundColor:'rgba(34,197,94,.8)', borderRadius:4 }]);
 
   // Interior — annual
-  makeBar('chart-interior-monthly', MESES, [{ label:'Interior', data:mInt, backgroundColor:'rgba(168,85,247,.8)', borderRadius:4 }]);
+  makeBar('chart-interior-monthly', mesesY, [{ label:'Interior', data:mIntY, backgroundColor:'rgba(168,85,247,.8)', borderRadius:4 }]);
 }
 
 // ── TAB SWITCHER ──────────────────────────────────────────────────────────────
@@ -953,25 +1001,25 @@ function switchTab(name, el) {
   document.getElementById("pane-"+name).classList.add("active");
 }
 
-// ── INIT ─────────────────────────────────────────────────────────────────────
+// ── INIT ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 // ── THEME ─────────────────────────────────────────────────────────────────────
 (function(){
   try {
-    const saved = localStorage.getItem('logistica-theme');
-    const useLight = saved === null ? true : saved === 'light';
-    if (useLight) {
-      document.body.classList.add('light');
-      document.getElementById('themeIcon').textContent = '🌙';
-      document.getElementById('themeLabel').textContent = 'Modo oscuro';
+    const saved = localStorage.getItem("logistica-theme");
+    const useLight = saved === null ? true : saved === "light";
+       if (useLight) {
+      document.body.classList.add("light");
+      document.getElementById("themeIcon").textContent = "🌙";
+      document.getElementById("themeLabel").textContent = "Modo oscuro";
     }
   } catch(e) {}
 })();
 
 function toggleTheme() {
-  const isLight = document.body.classList.toggle('light');
-  document.getElementById('themeIcon').textContent = isLight ? '🌙' : '☀️';
-  document.getElementById('themeLabel').textContent = isLight ? 'Modo oscuro' : 'Modo claro';
-  try { localStorage.setItem('logistica-theme', isLight ? 'light' : 'dark'); } catch(e) {}
+  const isLight = document.body.classList.toggle("light");
+  document.getElementById("themeIcon").textContent = isLight ? "🌙" : "☀️";
+  document.getElementById("themeLabel").textContent = isLight ? "Modo oscuro" : "Modo claro";
+  try { localStorage.setItem("logistica-theme", isLight ? "light" : "dark"); } catch(e) {}
 }
 
 loadData();
