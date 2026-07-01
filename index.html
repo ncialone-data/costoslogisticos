@@ -932,6 +932,24 @@ function applyFilters() {
 
   <!-- ══ TIPOS ═══════════════════════════════════════════════════════════════ -->
   <div id="pane-tipos" class="tab-pane">
+
+    <div class="section">
+      <div class="section-title">
+        <span class="dot dot-retiro"></span>🔄 Retiros — Evolución Mensual ${year}
+        <span class="section-subtitle">Año completo</span>
+      </div>
+      <div class="chart-wrap"><canvas id="chart-retiro-monthly-t"></canvas></div>
+    </div>
+    <div class="section">
+      <div class="section-title">
+        <span class="dot dot-interplanta"></span>🏭 Interplanta — Evolución Mensual ${year}
+        <span class="section-subtitle">Año completo</span>
+      </div>
+      <div class="chart-wrap"><canvas id="chart-ipl-monthly-t"></canvas></div>
+    </div>
+
+    <hr class="divider">
+
     <div class="section">
       <div class="section-title"><span class="dot dot-retiro"></span>🔄 Retiros · Detalle ${viewLbl} — ${periodLabel}</div>
       ${periodTable(retiroFilt,view)}
@@ -973,13 +991,15 @@ function applyFilters() {
     { label:'Costo diario', data:dAll.data, backgroundColor:'rgba(79,142,247,.7)', borderRadius:3 }
   ]);
 
-  // Retiros — annual charts
-  makeLine('chart-retiro-monthly', mesesY, [{ label:'Retiros', data:mRetY, borderColor:'rgba(249,115,22,1)', backgroundColor:'rgba(249,115,22,.10)' }]);
+  // Retiros — annual charts (pane-resumen + pane-tipos duplicate)
+  makeLine('chart-retiro-monthly',   mesesY, [{ label:'Retiros', data:mRetY, borderColor:'rgba(249,115,22,1)', backgroundColor:'rgba(249,115,22,.10)' }]);
+  makeLine('chart-retiro-monthly-t', mesesY, [{ label:'Retiros', data:mRetY, borderColor:'rgba(249,115,22,1)', backgroundColor:'rgba(249,115,22,.10)' }]);
   makeBar('chart-retiro-weekly',  wRet.labels, [{ label:'Retiros', data:wRet.data, backgroundColor:'rgba(249,115,22,.75)', borderRadius:3 }]);
   makeBar('chart-retiro-daily',   dRet.labels, [{ label:'Retiros', data:dRet.data, backgroundColor:'rgba(249,115,22,.7)', borderRadius:3 }]);
 
-  // Interplanta — annual charts
-  makeLine('chart-ipl-monthly', mesesY, [{ label:'Interplanta', data:mIplY, borderColor:'rgba(236,72,153,1)', backgroundColor:'rgba(236,72,153,.10)' }]);
+  // Interplanta — annual charts (pane-resumen + pane-tipos duplicate)
+  makeLine('chart-ipl-monthly',   mesesY, [{ label:'Interplanta', data:mIplY, borderColor:'rgba(236,72,153,1)', backgroundColor:'rgba(236,72,153,.10)' }]);
+  makeLine('chart-ipl-monthly-t', mesesY, [{ label:'Interplanta', data:mIplY, borderColor:'rgba(236,72,153,1)', backgroundColor:'rgba(236,72,153,.10)' }]);
   makeBar('chart-ipl-weekly',  wIpl.labels, [{ label:'Interplanta', data:wIpl.data, backgroundColor:'rgba(236,72,153,.7)', borderRadius:3 }]);
   makeBar('chart-ipl-daily',   dIpl.labels, [{ label:'Interplanta', data:dIpl.data, backgroundColor:'rgba(236,72,153,.65)', borderRadius:3 }]);
 
@@ -1001,13 +1021,12 @@ function switchTab(name, el) {
   document.getElementById("pane-"+name).classList.add("active");
 }
 
-// ── INIT ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 // ── THEME ─────────────────────────────────────────────────────────────────────
 (function(){
   try {
     const saved = localStorage.getItem("logistica-theme");
     const useLight = saved === null ? true : saved === "light";
-       if (useLight) {
+    if (useLight) {
       document.body.classList.add("light");
       document.getElementById("themeIcon").textContent = "🌙";
       document.getElementById("themeLabel").textContent = "Modo oscuro";
