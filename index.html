@@ -146,8 +146,22 @@
   /* ── KPI CARDS ──────────────────────────────────────────────────────────── */
   .kpi-grid { display: grid; gap: 12px; margin-bottom: 10px; }
   .kpi-row1 { grid-template-columns: repeat(3, 1fr); }
-  .kpi-row2 { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); margin-bottom: 22px; }
-  @media (max-width: 700px) { .kpi-row1 { grid-template-columns: 1fr; } }
+  .kpi-row2 { grid-template-columns: repeat(3, 1fr); }
+  .kpi-row3 { grid-template-columns: repeat(2, 1fr); margin-bottom: 22px; }
+  @media (max-width: 700px) { .kpi-row1, .kpi-row2, .kpi-row3 { grid-template-columns: 1fr; } }
+  @media (max-width: 900px) { .kpi-row2 { grid-template-columns: repeat(3, 1fr); } }
+  /* Sub-categorías label */
+  .kpi-sub-label {
+    font-size: 10.5px; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .12em;
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 6px; margin-bottom: 2px;
+  }
+  .kpi-sub-label::before, .kpi-sub-label::after {
+    content: ''; flex: 1; height: 1px; background: var(--line);
+  }
+  .kpi-card.retiro-sub::before    { background: var(--retiro-color); }
+  .kpi-card.interplanta-sub::before { background: var(--interplanta-color); }
   .kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; position: relative; overflow: hidden; }
   .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 10px 10px 0 0; }
   .kpi-card.total::before      { background: var(--yellow); }
@@ -775,7 +789,7 @@ function applyFilters() {
     </div>
   </div>
 
-  <!-- KPIs — Fila 2: Desglose -->
+  <!-- KPIs — Fila 2: Categorías principales (suman el Total General) -->
   <div class="kpi-grid kpi-row2">
     <div class="kpi-card camion">
       <div class="label">Camiones Locales</div>
@@ -792,15 +806,20 @@ function applyFilters() {
       <div class="value">${fmt(totInt)}</div>
       <div class="sub">${intFilt.length} viajes · ${totGen?(totInt/totGen*100).toFixed(1):0}%</div>
     </div>
-    <div class="kpi-card retiro">
+  </div>
+
+  <!-- KPIs — Fila 3: Sub-categorías (incluidas dentro de Camiones Locales) -->
+  <div class="kpi-sub-label">Sub-categorías incluidas en Camiones Locales</div>
+  <div class="kpi-grid kpi-row3">
+    <div class="kpi-card retiro-sub">
       <div class="label">🔄 Retiros</div>
-      <div class="value">${fmt(totRet)}</div>
-      <div class="sub">${retiroFilt.length} registros</div>
+      <div class="value" style="color:var(--retiro-color)">${fmt(totRet)}</div>
+      <div class="sub">${retiroFilt.length} registros · ${totCam?(totRet/totCam*100).toFixed(1):0}% de Camiones</div>
     </div>
-    <div class="kpi-card interplanta">
+    <div class="kpi-card interplanta-sub">
       <div class="label">🏭 Interplanta</div>
-      <div class="value">${fmt(totIpl)}</div>
-      <div class="sub">${interplantaFilt.length} registros</div>
+      <div class="value" style="color:var(--interplanta-color)">${fmt(totIpl)}</div>
+      <div class="sub">${interplantaFilt.length} registros · ${totCam?(totIpl/totCam*100).toFixed(1):0}% de Camiones</div>
     </div>
   </div>
 
