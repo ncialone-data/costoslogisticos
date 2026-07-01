@@ -974,23 +974,23 @@ function applyFilters() {
   ]);
 
   // Retiros — annual charts
-  makeBar('chart-retiro-monthly', mesesY, [{ label:'Retiros', data:mRetY, backgroundColor:'rgba(249,115,22,.85)', borderRadius:4 }]);
+  makeLine('chart-retiro-monthly', mesesY, [{ label:'Retiros', data:mRetY, borderColor:'rgba(249,115,22,1)', backgroundColor:'rgba(249,115,22,.10)' }]);
   makeBar('chart-retiro-weekly',  wRet.labels, [{ label:'Retiros', data:wRet.data, backgroundColor:'rgba(249,115,22,.75)', borderRadius:3 }]);
   makeBar('chart-retiro-daily',   dRet.labels, [{ label:'Retiros', data:dRet.data, backgroundColor:'rgba(249,115,22,.7)', borderRadius:3 }]);
 
   // Interplanta — annual charts
-  makeBar('chart-ipl-monthly', mesesY, [{ label:'Interplanta', data:mIplY, backgroundColor:'rgba(236,72,153,.8)', borderRadius:4 }]);
+  makeLine('chart-ipl-monthly', mesesY, [{ label:'Interplanta', data:mIplY, borderColor:'rgba(236,72,153,1)', backgroundColor:'rgba(236,72,153,.10)' }]);
   makeBar('chart-ipl-weekly',  wIpl.labels, [{ label:'Interplanta', data:wIpl.data, backgroundColor:'rgba(236,72,153,.7)', borderRadius:3 }]);
   makeBar('chart-ipl-daily',   dIpl.labels, [{ label:'Interplanta', data:dIpl.data, backgroundColor:'rgba(236,72,153,.65)', borderRadius:3 }]);
 
   // Camiones — annual
-  makeBar('chart-camiones-monthly', mesesY, [{ label:'Camiones', data:mCamY, backgroundColor:'rgba(79,142,247,.8)', borderRadius:4 }]);
+  makeLine('chart-camiones-monthly', mesesY, [{ label:'Camiones', data:mCamY, borderColor:'rgba(79,142,247,1)', backgroundColor:'rgba(79,142,247,.10)' }]);
 
   // Camionetas
-  if (hasVan) makeBar('chart-camionetas-monthly', mesesY, [{ label:'Camionetas', data:mVanY, backgroundColor:'rgba(34,197,94,.8)', borderRadius:4 }]);
+  if (hasVan) makeLine('chart-camionetas-monthly', mesesY, [{ label:'Camionetas', data:mVanY, borderColor:'rgba(34,197,94,1)', backgroundColor:'rgba(34,197,94,.10)' }]);
 
   // Interior — annual
-  makeBar('chart-interior-monthly', mesesY, [{ label:'Interior', data:mIntY, backgroundColor:'rgba(168,85,247,.8)', borderRadius:4 }]);
+  makeLine('chart-interior-monthly', mesesY, [{ label:'Interior', data:mIntY, borderColor:'rgba(168,85,247,1)', backgroundColor:'rgba(168,85,247,.10)' }]);
 }
 
 // ── TAB SWITCHER ──────────────────────────────────────────────────────────────
