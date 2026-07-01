@@ -245,21 +245,7 @@
   <div class="seg" id="seg-year"><!-- populated by JS --></div>
 
   <span class="cut-lbl">Período</span>
-  <div class="seg" id="seg-month">
-    <button onclick="setMonth(0,this)">Todo</button>
-    <button onclick="setMonth(1,this)">Ene</button>
-    <button onclick="setMonth(2,this)">Feb</button>
-    <button onclick="setMonth(3,this)">Mar</button>
-    <button onclick="setMonth(4,this)">Abr</button>
-    <button onclick="setMonth(5,this)">May</button>
-    <button onclick="setMonth(6,this)">Jun</button>
-    <button onclick="setMonth(7,this)">Jul</button>
-    <button onclick="setMonth(8,this)">Ago</button>
-    <button onclick="setMonth(9,this)">Sep</button>
-    <button onclick="setMonth(10,this)">Oct</button>
-    <button onclick="setMonth(11,this)">Nov</button>
-    <button onclick="setMonth(12,this)">Dic</button>
-  </div>
+  <div class="seg" id="seg-month"><!-- populated by JS after data load --></div>
 
 
 
@@ -407,25 +393,26 @@ async function loadData() {
         cost: parseCost(r.COSTO)
       }));
 
-    // Build year buttons
-    const years = [...new Set([...allLocal,...allInterior].filter(r=>r.date).map(r=>r.date.getFullYear()))].sort((a,b)=>b-a);
+    // ── Año: sólo mostrar el año vigente ──────────────────────────────────────
     const curYear = new Date().getFullYear();
-    if (!years.includes(curYear)) activeYear = years[0] || curYear;
-
+    activeYear = curYear;
     document.getElementById('seg-year').innerHTML =
-      years.map(y => `<button onclick="setYear(${y},this)" ${y===activeYear?'class="on"':''}>${y}</button>`).join('');
+      `<button class="on" onclick="setYear(${curYear},this)">${curYear}</button>`;
 
-    // Auto-detectar el último mes con datos en el año activo
+    // ── Meses: sólo los que tienen datos en el año activo ─────────────────────
     const monthsWithData = [...new Set(
       [...allLocal, ...allInterior]
         .filter(r => r.date && r.date.getFullYear() === activeYear)
         .map(r => r.date.getMonth() + 1)  // 1-12
-    )].sort((a, b) => b - a);
-    if (monthsWithData.length) activeMonth = monthsWithData[0]; // último mes con datos
+    )].sort((a, b) => a - b); // ascendente para mostrar Ene→Jun en orden
 
-    const monthBtns = document.querySelectorAll('#seg-month button');
-    monthBtns.forEach(b => b.classList.remove('on'));
-    monthBtns[activeMonth].classList.add('on'); // index 0=Todo, 1=Ene ... 12=Dic
+    if (monthsWithData.length) activeMonth = monthsWithData[monthsWithData.length - 1]; // último mes con datos
+
+    document.getElementById('seg-month').innerHTML =
+      `<button onclick="setMonth(0,this)"${activeMonth===0?' class="on"':''}>Todo</button>` +
+      monthsWithData.map(m =>
+        `<button onclick="setMonth(${m},this)"${m===activeMonth?' class="on"':''}>${MESES[m-1]}</button>`
+      ).join('');
 
     document.getElementById('last-refresh').textContent =
       'Auto-actualizado: ' + new Date().toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
