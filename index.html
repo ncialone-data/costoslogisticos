@@ -144,24 +144,38 @@
   .main { padding-top: 18px; }
 
   /* ── KPI CARDS ──────────────────────────────────────────────────────────── */
-  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(185px, 1fr)); gap: 12px; margin-bottom: 22px; }
+  .kpi-grid { display: grid; gap: 12px; margin-bottom: 10px; }
+  .kpi-row1 { grid-template-columns: repeat(3, 1fr); }
+  .kpi-row2 { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); margin-bottom: 22px; }
+  @media (max-width: 700px) { .kpi-row1 { grid-template-columns: 1fr; } }
   .kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; position: relative; overflow: hidden; }
   .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 10px 10px 0 0; }
-  .kpi-card.total::before  { background: var(--yellow); }
-  .kpi-card.camion::before { background: var(--camion-color); }
-  .kpi-card.camioneta::before { background: var(--camioneta-color); }
-  .kpi-card.interior::before  { background: var(--interior-color); }
-  .kpi-card.retiro::before    { background: var(--retiro-color); }
+  .kpi-card.total::before      { background: var(--yellow); }
+  .kpi-card.camion::before     { background: var(--camion-color); }
+  .kpi-card.camioneta::before  { background: var(--camioneta-color); }
+  .kpi-card.interior::before   { background: var(--interior-color); }
+  .kpi-card.retiro::before     { background: var(--retiro-color); }
   .kpi-card.interplanta::before { background: var(--interplanta-color); }
+  .kpi-card.cruce-ayer::before { background: linear-gradient(90deg, #06b6d4, #3b82f6); }
+  .kpi-card.cruce-mes::before  { background: linear-gradient(90deg, #8b5cf6, #3b82f6); }
   .kpi-card .label { font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 6px; font-weight: 500; }
-  .kpi-card .value { font-size: 22px; font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; letter-spacing: -.03em; font-weight: 700; letter-spacing: -.02em; }
+  .kpi-card .value { font-size: 22px; font-family: 'IBM Plex Mono', monospace; font-weight: 700; letter-spacing: -.02em; }
   .kpi-card .sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
-  .kpi-card.total .value  { color: var(--yellow); }
-  .kpi-card.camion .value { color: var(--camion-color); }
-  .kpi-card.camioneta .value { color: var(--camioneta-color); }
-  .kpi-card.interior .value  { color: var(--interior-color); }
-  .kpi-card.retiro .value    { color: var(--retiro-color); }
+  .kpi-card.total .value       { color: var(--yellow); }
+  .kpi-card.camion .value      { color: var(--camion-color); }
+  .kpi-card.camioneta .value   { color: var(--camioneta-color); }
+  .kpi-card.interior .value    { color: var(--interior-color); }
+  .kpi-card.retiro .value      { color: var(--retiro-color); }
   .kpi-card.interplanta .value { color: var(--interplanta-color); }
+  .kpi-card.cruce-ayer .value  { color: #06b6d4; }
+  .kpi-card.cruce-mes .value   { color: #8b5cf6; }
+  /* Cruce detail rows */
+  .cruce-detail { display: flex; flex-direction: column; gap: 2px; margin: 5px 0 3px; }
+  .comp-row { display: flex; align-items: baseline; gap: 6px; }
+  .comp-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; min-width: 26px; }
+  .comp-val { font-size: 12.5px; font-family: 'IBM Plex Mono', monospace; font-weight: 600; color: var(--text); }
+  .pct-badge { display: inline-block; background: rgba(34,197,94,.15); color: #22c55e; border-radius: 6px; padding: 1px 7px; font-size: 12px; font-weight: 700; margin-right: 3px; }
+  .pct-na { font-style: italic; color: var(--muted); font-size: 11px; }
 
   /* ── TABS ───────────────────────────────────────────────────────────────── */
   .tabs { display: flex; justify-content: center; gap: 4px; margin-bottom: 24px; flex-wrap: wrap; }
@@ -271,14 +285,16 @@
 </div>
 
 <script>
-const SHEET1_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTi7MdEChz7JN_PfbbGv1mlsUu7wXrMfZ6dxRXCaCCMcXiF1oPBsl-4g2x-m2PP4UsARtjGe0kr3vyR/pub?gid=0&single=true&output=csv';
-const SHEET2_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRLiLJDwbff3CnL97fzpugm-PjPwlZeG-RLF3HiNIETieVE_ulVEAXbqK-6Ay4ksVrWw6btTDS-5S7G/pub?gid=12332453&single=true&output=csv';
+const SHEET1_URL   = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTi7MdEChz7JN_PfbbGv1mlsUu7wXrMfZ6dxRXCaCCMcXiF1oPBsl-4g2x-m2PP4UsARtjGe0kr3vyR/pub?gid=0&single=true&output=csv';
+const SHEET2_URL   = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRLiLJDwbff3CnL97fzpugm-PjPwlZeG-RLF3HiNIETieVE_ulVEAXbqK-6Ay4ksVrWw6btTDS-5S7G/pub?gid=12332453&single=true&output=csv';
+const SHEET3_URL   = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQso2UGt8oBIwOBkhPICKGZxEugGPjK5H8cXQsyeTVPHseewsb66T30k5BbdpwryyNRHUAwFOm_p_ND/pub?output=csv';
 
 const MESES      = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 const MESES_FULL = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
 let allLocal    = [];
 let allInterior = [];
+let allRemitos  = [];   // ventas remitos (sheet 3)
 let charts      = {};
 
 // ── ACTIVE FILTER STATE ───────────────────────────────────────────────────────
@@ -367,9 +383,10 @@ async function loadData() {
   const icon = document.getElementById('refresh-icon');
   btn.disabled = true; icon.classList.add('spin');
   try {
-    const [r1, r2] = await Promise.all([
+    const [r1, r2, r3] = await Promise.all([
       fetchWithTimeout(SHEET1_URL),
-      fetchWithTimeout(SHEET2_URL)
+      fetchWithTimeout(SHEET2_URL),
+      fetchWithTimeout(SHEET3_URL).catch(() => '')   // graceful — si falla, cards muestran "—"
     ]);
 
     allLocal = parseCSV(r1)
@@ -392,6 +409,14 @@ async function loadData() {
         reparto: r.REPARTO||'',
         cost: parseCost(r.COSTO)
       }));
+
+    // ── Remitos / Ventas (sheet 3) ────────────────────────────────────────────
+    allRemitos = r3 ? parseCSV(r3)
+      .filter(r => r.FECHA && parseDate(r.FECHA))
+      .map(r => ({
+        date: parseDate(r.FECHA),
+        venta: parseCost(r['VENTA IMPORTE'] || r['VENTA_IMPORTE'] || r['IMPORTE'] || 0)
+      })) : [];
 
     // ── Año: sólo mostrar el año vigente ──────────────────────────────────────
     const curYear = new Date().getFullYear();
@@ -661,6 +686,36 @@ function applyFilters() {
   const totIpl = interplantaFilt.reduce((s,r)=>s+r.cost,0);
   const totGen = totCam + totVan + totInt;
 
+  // ── CRUCE LOGÍSTICA × VENTAS ──────────────────────────────────────────────
+  const hoy  = new Date(); hoy.setHours(0,0,0,0);
+  const ayer = new Date(hoy); ayer.setDate(ayer.getDate() - 1);
+
+  const costoAyer = [...allLocal, ...allInterior]
+    .filter(r => r.date && r.date >= ayer && r.date < hoy)
+    .reduce((s,r) => s+r.cost, 0);
+
+  const ventaAyer = allRemitos
+    .filter(r => r.date && r.date >= ayer && r.date < hoy)
+    .reduce((s,r) => s+r.venta, 0);
+
+  const costoMes = totGen;  // ya filtrado por mes/año activo
+
+  const ventaMes = allRemitos
+    .filter(r => {
+      if (!r.date || r.date.getFullYear() !== year) return false;
+      if (month && r.date.getMonth()+1 !== month) return false;
+      return true;
+    })
+    .reduce((s,r) => s+r.venta, 0);
+
+  const pctAyer = ventaAyer > 0 ? (costoAyer/ventaAyer*100).toFixed(1) : null;
+  const pctMes  = ventaMes  > 0 ? (costoMes /ventaMes *100).toFixed(1) : null;
+
+  const fmtPct = (pct) => pct !== null ? `<span class="pct-badge">${pct}%</span> del facturado` : '<span class="pct-na">sin datos de venta</span>';
+  const fmtComp = (costo, venta) => venta > 0
+    ? `<span class="comp-row"><span class="comp-lbl">Log.</span><span class="comp-val">${fmtFull(costo)}</span></span><span class="comp-row"><span class="comp-lbl">Vta.</span><span class="comp-val">${fmtFull(venta)}</span></span>`
+    : `<span class="comp-row"><span class="comp-lbl">Log.</span><span class="comp-val">${fmtFull(costo)}</span></span><span class="comp-row"><span class="comp-lbl">Vta.</span><span class="comp-val">—</span></span>`;
+
   // ── ANNUAL CHART DATA — always full year regardless of month filter ──
   const mCam = monthlyTotals(camYear,  year);
   const mVan = monthlyTotals(vanYear,  year);
@@ -699,13 +754,29 @@ function applyFilters() {
 
   document.getElementById('app').innerHTML = `
 
-  <!-- KPIs -->
-  <div class="kpi-grid">
+  <!-- KPIs — Fila 1: Total + Cruce Logística/Ventas -->
+  <div class="kpi-grid kpi-row1">
     <div class="kpi-card total">
       <div class="label">Total General · ${periodLabel}</div>
       <div class="value">${fmt(totGen)}</div>
       <div class="sub">${fmtFull(totGen)}</div>
     </div>
+    <div class="kpi-card cruce-ayer">
+      <div class="label">Log. Ayer / Facturado Ayer</div>
+      <div class="value cruce-value">${costoAyer>0?fmt(costoAyer):'—'}</div>
+      <div class="cruce-detail">${fmtComp(costoAyer, ventaAyer)}</div>
+      <div class="sub">${fmtPct(pctAyer)}</div>
+    </div>
+    <div class="kpi-card cruce-mes">
+      <div class="label">Log. Mensual / Facturado Mensual · ${periodLabel}</div>
+      <div class="value cruce-value">${fmt(costoMes)}</div>
+      <div class="cruce-detail">${fmtComp(costoMes, ventaMes)}</div>
+      <div class="sub">${fmtPct(pctMes)}</div>
+    </div>
+  </div>
+
+  <!-- KPIs — Fila 2: Desglose -->
+  <div class="kpi-grid kpi-row2">
     <div class="kpi-card camion">
       <div class="label">Camiones Locales</div>
       <div class="value">${fmt(totCam)}</div>
@@ -1032,3 +1103,4 @@ loadData();
 </script>
 </body>
 </html>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
