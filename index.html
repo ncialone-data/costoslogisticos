@@ -410,12 +410,15 @@ async function loadData() {
         cost: parseCost(r.COSTO)
       }));
 
-    // ── Remitos / Ventas (sheet 3) — solo estados: FIRMADOS, INGRESADOS, REPARTO ─
-    const ESTADOS_VALIDOS = new Set(['FIRMADOS','INGRESADOS','REPARTO']);
+    // ── Remitos / Ventas (sheet 3) — solo estados: Firmada, Ingresada, Reparto ──
+    // Normalizamos: trim + uppercase + quitar tildes para tolerar variantes
+    const normalizeEstado = s => (s||'').trim().toUpperCase()
+      .replace(/Á/g,'A').replace(/É/g,'E').replace(/Í/g,'I').replace(/Ó/g,'O').replace(/Ú/g,'U');
+    const ESTADOS_VALIDOS = new Set(['FIRMADA','FIRMADO','INGRESADA','INGRESADO','REPARTO']);
     allRemitos = r3 ? parseCSV(r3)
       .filter(r => {
         if (!r.FECHA || !parseDate(r.FECHA)) return false;
-        return ESTADOS_VALIDOS.has((r.ESTADO || '').trim().toUpperCase());
+        return ESTADOS_VALIDOS.has(normalizeEstado(r.ESTADO));
       })
       .map(r => ({
         date: parseDate(r.FECHA),
@@ -1107,4 +1110,4 @@ loadData();
 </script>
 </body>
 </html>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+                                                                                                                                                                                                                                                                                                                                                                                  
