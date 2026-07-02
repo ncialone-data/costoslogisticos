@@ -188,7 +188,10 @@
   .comp-row { display: flex; align-items: baseline; gap: 6px; }
   .comp-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; min-width: 26px; }
   .comp-val { font-size: 12.5px; font-family: 'IBM Plex Mono', monospace; font-weight: 600; color: var(--text); }
-  .pct-badge { display: inline-block; background: rgba(34,197,94,.15); color: #22c55e; border-radius: 6px; padding: 1px 7px; font-size: 12px; font-weight: 700; margin-right: 3px; }
+  .pct-badge { display: inline-block; border-radius: 6px; padding: 1px 7px; font-size: 12px; font-weight: 700; margin-right: 3px; }
+  .pct-green  { background: rgba(34,197,94,.15);  color: #22c55e; }   /* < 2.5%  */
+  .pct-yellow { background: rgba(251,191,36,.18);  color: #d97706; }   /* 2.5–2.9% */
+  .pct-red    { background: rgba(239,68,68,.15);   color: #ef4444; }   /* ≥ 3%    */
   .pct-na { font-style: italic; color: var(--muted); font-size: 11px; }
 
   /* ── TABS ───────────────────────────────────────────────────────────────── */
@@ -731,7 +734,8 @@ function applyFilters() {
   const pctAyer = ventaAyer > 0 ? (costoAyer/ventaAyer*100).toFixed(1) : null;
   const pctMes  = ventaMes  > 0 ? (costoMes /ventaMes *100).toFixed(1) : null;
 
-  const fmtPct = (pct) => pct !== null ? `<span class="pct-badge">${pct}%</span> del facturado` : '<span class="pct-na">sin datos de venta</span>';
+  const pctClass = (pct) => pct === null ? '' : parseFloat(pct) < 2.5 ? 'pct-green' : parseFloat(pct) < 3.0 ? 'pct-yellow' : 'pct-red';
+  const fmtPct = (pct) => pct !== null ? `<span class="pct-badge ${pctClass(pct)}">${pct}%</span> del facturado` : '<span class="pct-na">sin datos de venta</span>';
   const fmtComp = (costo, venta) => venta > 0
     ? `<span class="comp-row"><span class="comp-lbl">Log.</span><span class="comp-val">${fmtFull(costo)}</span></span><span class="comp-row"><span class="comp-lbl">Vta.</span><span class="comp-val">${fmtFull(venta)}</span></span>`
     : `<span class="comp-row"><span class="comp-lbl">Log.</span><span class="comp-val">${fmtFull(costo)}</span></span><span class="comp-row"><span class="comp-lbl">Vta.</span><span class="comp-val">—</span></span>`;
@@ -1128,4 +1132,4 @@ loadData();
 </script>
 </body>
 </html>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+                                                                                                                                                                                    
