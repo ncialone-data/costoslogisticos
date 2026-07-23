@@ -809,7 +809,7 @@ function applyFilters() {
     <div class="kpi-card camioneta">
       <div class="label">Camionetas</div>
       <div class="value">${hasVan?fmt(totVan):'—'}</div>
-      <div class="sub">${hasVan?vanFilt.length+' registros':'Sin datos'}</div>
+      <div class="sub">${hasVan?vanFilt.length+' registros · '+(totGen?(totVan/totGen*100).toFixed(1):0)+'%':'Sin datos'}</div>
     </div>
     <div class="kpi-card interior">
       <div class="label">Viajes Interior</div>
@@ -836,7 +836,7 @@ function applyFilters() {
   <!-- TABS -->
   <div class="tabs">
     <div class="tabs-inner">
-      <div class="tab active" onclick="switchTab('resumen',this)">Resumen Anual</div>
+      <div class="tab active" onclick="switchTab('resumen',this)">Resumen Total</div>
       <div class="tab" onclick="switchTab('camiones',this)">Camiones Locales</div>
       <div class="tab" onclick="switchTab('camionetas',this)">Camionetas</div>
       <div class="tab" onclick="switchTab('interior',this)">Viajes Interior</div>
