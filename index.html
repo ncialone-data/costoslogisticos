@@ -427,10 +427,10 @@ async function loadData() {
         cost: parseCost(r.COSTO)
       }));
 
-    // ── Remitos / Ventas (sheet 3) — solo: Firmada, Ingresada, Reparto ──────────
+    // ── Remitos / Ventas (sheet 3) — solo: Firmada, Ingresada, Reparto, Transito ─
     const normalizeEstado = s => (s||'').trim().toUpperCase()
       .replace(/Á/g,'A').replace(/É/g,'E').replace(/Í/g,'I').replace(/Ó/g,'O').replace(/Ú/g,'U');
-    const ESTADOS_VALIDOS = new Set(['FIRMADA','FIRMADO','INGRESADA','INGRESADO','REPARTO']);
+    const ESTADOS_VALIDOS = new Set(['FIRMADA','FIRMADO','INGRESADA','INGRESADO','REPARTO','TRANSITO']);
     allRemitos = r3 ? parseCSV(r3)
       .filter(r => {
         if (!r.FECHA || !parseDate(r.FECHA)) return false;
